@@ -56,19 +56,21 @@ class WebDriver(RemoteWebDriver):
                 stacklevel=2,
             )
 
-        self._reuse_service = reuse_service and service.reuse_service
-        self.service = service
+        self.service = service if service else Service()
+        self.options = options if options else Options()
+        self.keep_alive = keep_alive
 
+        self._reuse_service = reuse_service and self.service.reuse_service
         if not self._reuse_service:
             self.service.start()
 
         executor = SafariRemoteConnection(
             remote_server_addr=self.service.service_url,
-            keep_alive=keep_alive,
-            ignore_proxy=options._ignore_local_proxy,
+            keep_alive=self.keep_alive,
+            ignore_proxy=self.options._ignore_local_proxy,
         )
 
-        super().__init__(command_executor=executor, options=options)
+        super().__init__(command_executor=executor, options=self.options)
 
         self._is_remote = False
 

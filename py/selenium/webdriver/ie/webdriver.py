@@ -29,8 +29,8 @@ class WebDriver(RemoteWebDriver):
 
     def __init__(
         self,
-        options: Options = Options(),
-        service: Service = Service(),
+        options: Options = None,
+        service: Service = None,
         keep_alive=True,
     ) -> None:
         """Creates a new instance of the Ie driver.
@@ -43,17 +43,20 @@ class WebDriver(RemoteWebDriver):
          - keep_alive - Deprecated: Whether to configure RemoteConnection to use HTTP keep-alive.
         """
 
-        self.iedriver = service
-        self.iedriver.path = DriverFinder.get_path(self.iedriver, options)
+        self.iedriver = service if service else Service()
+        self.options = options if options else Options()
+        self.keep_alive = keep_alive
+
+        self.iedriver.path = DriverFinder.get_path(self.iedriver, self.options)
         self.iedriver.start()
 
         executor = RemoteConnection(
-            remote_server_addr=self.service.service_url,
-            keep_alive=keep_alive,
-            ignore_proxy=options._ignore_local_proxy,
+            remote_server_addr=self.iedriver.service_url,
+            keep_alive=self.keep_alive,
+            ignore_proxy=self.options._ignore_local_proxy,
         )
 
-        super().__init__(command_executor=executor, options=options)
+        super().__init__(command_executor=executor, options=self.options)
         self._is_remote = False
 
     def quit(self) -> None:

@@ -29,8 +29,8 @@ class WebDriver(ChromiumDriver):
 
     def __init__(
         self,
-        options: Options = Options(),
-        service: Service = Service(),
+        options: Options = None,
+        service: Service = None,
         keep_alive: bool = True,
     ) -> None:
         """Creates a new instance of the chrome driver. Starts the service and
@@ -41,12 +41,16 @@ class WebDriver(ChromiumDriver):
          - service - Service object for handling the browser driver if you need to pass extra details
          - keep_alive - Whether to configure ChromeRemoteConnection to use HTTP keep-alive.
         """
-        service.path = DriverFinder.get_path(service, options)
+        self.service = service if service else Service()
+        self.options = options if options else Options()
+        self.keep_alive = keep_alive
+
+        self.service.path = DriverFinder.get_path(self.service, self.options)
 
         super().__init__(
             DesiredCapabilities.CHROME["browserName"],
             "goog",
-            options,
-            service,
-            keep_alive,
+            self.options,
+            self.service,
+            self.keep_alive,
         )

@@ -57,9 +57,9 @@ class ChromiumDriver(RemoteWebDriver):
                     browser_name=browser_name,
                     vendor_prefix=vendor_prefix,
                     keep_alive=keep_alive,
-                    ignore_proxy=options._ignore_local_proxy,
+                    ignore_proxy=self.options._ignore_local_proxy,
                 ),
-                options=options,
+                options=self.options,
             )
         except Exception:
             self.quit()
