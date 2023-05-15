@@ -60,7 +60,7 @@ class WebDriver(RemoteWebDriver):
         self.options = options if options else Options()
         self.keep_alive = keep_alive
 
-        self._reuse_service = reuse_service and self.service.reuse_service
+        self._reuse_service = reuse_service or self.service.reuse_service
         if not self._reuse_service:
             self.service.start()
 
